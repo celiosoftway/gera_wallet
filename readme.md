@@ -25,4 +25,15 @@ Este projeto é uma aplicação simples para gerar carteiras Ethereum (compatív
 - Deploy local ou opcional (Discloud, Vercel, etc.)
 
 ---
+## 📌 Como usar
+- Para executar apenas pelo script, alterre a senha no zip.js na constante 'senhaZip'
+- node zip.js
+
+- Para utilizar a interface:
+- node server.js
+- Abra o index.htm (pode abrir diretamente sem servidor), 
+- Digite a senha
+- Clique em "gerar carteira"
+- Faça o download do arquivo.
+
 

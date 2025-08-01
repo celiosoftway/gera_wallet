@@ -5,6 +5,30 @@
   <title>Gerador de Carteira Fria</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+  max-width: 600px;
+  margin: 4rem auto;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 12px;
+}
+
+html, body {
+  height: 100%;
+  background: #eaeaea;
+}
+
+@media (max-width: 640px) {
+  body {
+    margin: 1rem;
+    box-shadow: none;
+    border-radius: 0;
+    background-color: #fff;
+  }
+}
+
 textarea {
   width: 100%;
   height: 50px; /* diminuiu de 80px para 50px */
