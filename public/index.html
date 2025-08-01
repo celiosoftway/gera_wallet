@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gerador de Carteira Fria</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+textarea {
+  width: 100%;
+  height: 50px; /* diminuiu de 80px para 50px */
+  font-family: monospace;
+  font-size: 1.1rem; /* aumenta o tamanho da fonte dentro das caixas */
+  resize: none;
+  padding: 0.4rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+input#senha {
+  width: 100%;
+  padding: 0.8rem;      /* deixa o input maior em altura */
+  font-size: 1.3rem;    /* aumenta o tamanho do texto */
+  border-radius: 6px;
+  border: 2px solid #007bff; /* azul claro */
+  background-color: #e7f1ff; /* fundo azul claro */
+  color: #003366;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input#senha:focus {
+  border-color: #0056b3; /* azul mais escuro no foco */
+  outline: none;
+}
+
+button {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1.2rem;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+#downloadZip {
+  display: none; /* inicialmente escondido */
+  background-color: #28a745;
+  color: white;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+  margin-top: 1rem;
+  cursor: pointer;
+
+  /* Aqui a mudança principal: */
+  display: block;
+  width: 100%; /* ocupa toda a largura */
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#downloadZip:hover {
+  background-color: #218838;
+  box-shadow: 0 6px 12px rgba(33, 136, 56, 0.6);
+}
+
+
+  </style>
+</head>
+<body>
+  <h2>Gerador de Carteira Fria</h2>
+
+  <label>Senha para criptografar (usada apenas no .7z):</label>
+  <input type="password" id="senha" style="width: 100%; margin-bottom: 1rem;" />
+
+  <button id="btnGerar">Gerar Carteira</button>
+
+  <h3>Mnemonic (não copiável):</h3>
+  <textarea id="mnemonic" class="hide-select" readonly></textarea>
+
+  <div class="address-box">
+    <h3>Ethereum</h3>
+    <textarea id="ethAddr" readonly></textarea>
+    <button onclick="copiar('ethAddr')">Copiar Endereço</button>
+  </div>
+
+  <div class="address-box">
+    <h3>Bitcoin Legacy</h3>
+    <textarea id="btcLegacy" readonly></textarea>
+    <button onclick="copiar('btcLegacy')">Copiar Endereço</button>
+  </div>
+
+  <div class="address-box">
+    <h3>Bitcoin Segwit</h3>
+    <textarea id="btcSegwit" readonly></textarea>
+    <button onclick="copiar('btcSegwit')">Copiar Endereço</button>
+  </div>
+
+  <div class="address-box">
+    <h3>Bitcoin Compatível</h3>
+    <textarea id="btcCompat" readonly></textarea>
+    <button onclick="copiar('btcCompat')">Copiar Endereço</button>
+  </div>
+
+  <a id="downloadZip" href="#" download>Clique aqui para baixar o arquivo ZIP</a>
+
+  <script>
+    document.getElementById('btnGerar').addEventListener('click', async () => {
+      const senha = document.getElementById('senha').value.trim();
+      if (!senha) return alert("Digite a senha!");
+
+      try {
+        const res = await fetch('http://localhost:3000/api/gerar-carteira', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ senha })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          throw new Error("Erro ao gerar carteira");
+        }
+
+        document.getElementById('mnemonic').value = data.mnemonic || '';
+        document.getElementById('ethAddr').value = data.eth || '';
+        document.getElementById('btcLegacy').value = data.legacy || '';
+        document.getElementById('btcSegwit').value = data.segwit || '';
+        document.getElementById('btcCompat').value = data.compat || '';
+
+        const zipFile = data.zip;
+        const zipURL = `http://localhost:3000/downloads/${zipFile}`;
+        const zipLink = document.getElementById('downloadZip');
+        zipLink.href = zipURL;
+        zipLink.style.display = 'block';
+      } catch (err) {
+        alert("Erro: " + err.message);
+      }
+    });
+
+    function copiar(id) {
+      const el = document.getElementById(id);
+      el.select();
+      document.execCommand("copy");
+      alert("Copiado!");
+    }
+  </script>
+</body>
+</html>
